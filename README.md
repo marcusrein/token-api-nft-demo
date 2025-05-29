@@ -39,11 +39,10 @@ A modern, multi-chain NFT portfolio dashboard built with Next.js, Chakra UI, and
    pnpm install
    ```
 3. **Configure environment variables:**
-  Add your JWT Key gathered from [The Graph Market](https://thegraph.market/) and your The Graph Network API Key from [Subgraph Studio](https://www.thegraph.com/studio)
+  Add your JWT Key gathered from [The Graph Market](https://thegraph.market/).
    ```bash
    # Edit .env.local and set:
    NEXT_PUBLIC_TOKEN_API_JWT_KEY=your_token_api_jwt_here
-   NEXT_PUBLIC_THE_GRAPH_NETWORK_API_KEY=your_graph_network_api_key_here
    ```
 
 4. **Run the app:**
@@ -93,19 +92,16 @@ pnpm add @chakra-ui/react @emotion/react @emotion/styled framer-motion react-que
 
 ### 3. Configure environment variables
 
-Create a `.env.local` (Next.js) or `.env` (CRA/Vite) file in your project root and add your API keys:
+Create a `.env.local` (Next.js) or `.env` (CRA/Vite) file in your project root and add your JWT for Token API:
 ```bash
 # Next.js (publicly exposed)
 NEXT_PUBLIC_TOKEN_API_JWT_KEY=YOUR_TOKEN_API_JWT_KEY
-NEXT_PUBLIC_THE_GRAPH_NETWORK_API_KEY=YOUR_GRAPH_NETWORK_API_KEY
 
 # Create React App (prefix with REACT_APP_)
 REACT_APP_TOKEN_API_JWT_KEY=YOUR_TOKEN_API_JWT_KEY
-REACT_APP_THE_GRAPH_NETWORK_API_KEY=YOUR_GRAPH_NETWORK_API_KEY
 
 # Vite (prefix with VITE_)
 VITE_TOKEN_API_JWT_KEY=YOUR_TOKEN_API_JWT_KEY
-VITE_THE_GRAPH_NETWORK_API_KEY=YOUR_GRAPH_NETWORK_API_KEY
 ```
 
 > **Tip:** Prefixes are required so that your build tool exposes the variables to the browser.
