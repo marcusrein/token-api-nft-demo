@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import tokenApi from "../lib/tokenApi";
+import tokenFetch from "../lib/tokenFetch";
 
 export default function useNftItem(contract, tokenId) {
   // If tokenId is supplied as a plain number and is outside the safe integer range, the
@@ -20,10 +20,10 @@ export default function useNftItem(contract, tokenId) {
       // values (which JavaScript may otherwise coerce into scientific-notation) are passed to
       // the Token API exactly as received.
       const safeTokenId = encodeURIComponent(String(tokenId));
-      const { data } = await tokenApi.get(
+      const json = await tokenFetch(
         `/nft/items/evm/contract/${contract}/token_id/${safeTokenId}`,
       );
-      return data.data?.[0];
+      return json.data?.[0];
     },
     {
       enabled:

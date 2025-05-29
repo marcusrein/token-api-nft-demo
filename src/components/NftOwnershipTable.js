@@ -11,14 +11,12 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import tokenApi from "../lib/tokenApi";
+import tokenFetch from "../lib/tokenFetch";
 import convertToHttpUrl from "../utils/convertToHttpUrl";
 
 async function fetchOwnerships(address) {
-  const { data } = await tokenApi.get(`/nft/ownerships/evm/${address}`, {
-    params: { limit: 20 }, // You might want to make limit configurable
-  });
-  return data.data;
+  const json = await tokenFetch(`/nft/ownerships/evm/${address}`, { limit: 20 });
+  return json.data;
 }
 
 export default function NftOwnershipTable({ address }) {

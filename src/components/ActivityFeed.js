@@ -1,26 +1,18 @@
 import { VStack, HStack, Text, Spinner } from "@chakra-ui/react";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { useQuery } from "react-query";
-import axios from "axios";
-
-dayjs.extend(relativeTime);
-
-const TOKEN_API = "/api/token";
+import tokenFetch from "../lib/tokenFetch";
 
 function useActivities(params) {
   return useQuery(
     ["activities", params],
     async () => {
       const { wallet, contract, networkId } = params || {};
-      const query = new URLSearchParams({ limit: 10, orderDirection: "desc" });
-      if (wallet) query.set("any", wallet);
-      if (contract) query.set("contract", contract);
-      if (networkId) query.set("network_id", networkId);
-      const { data } = await axios.get(
-        `${TOKEN_API}/nft/activities/evm?${query.toString()}`,
-      );
-      return data.data;
+      const query = { limit: 10, orderDirection: "desc" };
+      if (wallet) query.any = wallet;
+      if (contract) query.contract = contract;
+      if (networkId) query.network_id = networkId;
+      const json = await tokenFetch(`/nft/activities/evm`, query);
+      return json.data;
     },
     { enabled: !!(params.wallet || params.contract) },
   );
@@ -35,6 +27,21 @@ function badge(type) {
     default:
       return "🔄";
   }
+}
+
+function minutesAgo(date) {
+  const diffMs = Date.now() - new Date(date).getTime();
+  return Math.round(diffMs / 60000);
+}
+
+function formatAgo(date) {
+  const minutes = minutesAgo(date);
+  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  if (Math.abs(minutes) < 60) return rtf.format(-minutes, "minute");
+  const hours = Math.round(minutes / 60);
+  if (Math.abs(hours) < 24) return rtf.format(-hours, "hour");
+  const days = Math.round(hours / 24);
+  return rtf.format(-days, "day");
 }
 
 export default function ActivityFeed({
@@ -57,7 +64,7 @@ export default function ActivityFeed({
       {data.map((act, idx) => (
         <HStack key={`${act.tx_hash}-${idx}`} fontSize="xs" spacing={2}>
           <Text>{badge(act["@type"])}</Text>
-          <Text>{dayjs(act.timestamp).fromNow()}</Text>
+          <Text>{formatAgo(act.timestamp)}</Text>
           <Text>
             #{act.token_id} {act.from?.slice(0, 4)}… → {act.to?.slice(0, 4)}…
           </Text>

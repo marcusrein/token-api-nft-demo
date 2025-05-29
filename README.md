@@ -68,43 +68,58 @@ src/
 
 ## 📦 Copy-and-Paste Component Kit
 
-All UI widgets live in `src/components` and their helpers (`src/hooks`, `src/utils`, `src/lib`).  A single barrel file exposes everything so you can do:
+You can seamlessly reuse any widget from this repo in your own React or Next.js project—no extra setup required.
 
-```js
-import { NFTWalletHoldings, CollectionStatsBadge } from "../path-to-this-repo/src";
+### 1. Copy the source files
+
+- Copy the component file(s) you need from `src/components/`, e.g. `src/components/CollectionStatsBadge.js`.
+- Also copy any helpers those components depend on:
+  - `src/hooks/` (custom React hooks)
+  - `src/utils/` (utility functions)
+  - `src/lib/`  (API client & logger)
+
+_Or simply grab the entire `src/` folder to get everything at once._
+
+### 2. Install peer dependencies
+
+Run one of the following to install the required packages:
+```bash
+# npm
+npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion react-query axios dayjs
+
+# pnpm
+pnpm add @chakra-ui/react @emotion/react @emotion/styled framer-motion react-query axios dayjs
+```  
+
+### 3. Configure environment variables
+
+Create a `.env.local` (Next.js) or `.env` (CRA/Vite) file in your project root and add your API keys:
+```bash
+# Next.js (publicly exposed)
+NEXT_PUBLIC_TOKEN_API_JWT_KEY=YOUR_TOKEN_API_JWT_KEY
+NEXT_PUBLIC_THE_GRAPH_NETWORK_API_KEY=YOUR_GRAPH_NETWORK_API_KEY
+
+# Create React App (prefix with REACT_APP_)
+REACT_APP_TOKEN_API_JWT_KEY=YOUR_TOKEN_API_JWT_KEY
+REACT_APP_THE_GRAPH_NETWORK_API_KEY=YOUR_GRAPH_NETWORK_API_KEY
+
+# Vite (prefix with VITE_)
+VITE_TOKEN_API_JWT_KEY=YOUR_TOKEN_API_JWT_KEY
+VITE_THE_GRAPH_NETWORK_API_KEY=YOUR_GRAPH_NETWORK_API_KEY
 ```
 
-To drop any component into **another** Next.js / React project you only need:
+> **Tip:** Prefixes are required so that your build tool exposes the variables to the browser.
 
-1. The component file (or just `src` folder).
-2. The peer packages listed below.
-3. These two env vars in a `.env.local` file so the Token API can authenticate:
+### 4. Wrap your App with providers
 
-```
-NEXT_PUBLIC_TOKEN_API_JWT_KEY=<your_market_jwt>
-NEXT_PUBLIC_THE_GRAPH_NETWORK_API_KEY=<your_network_key>
-```
-
-### Peer dependencies
-
-```
-react >= 18
-next >= 14
-@chakra-ui/react @emotion/react @emotion/styled framer-motion
-@tanstack/react-query (or react-query v3)
-axios
-dayjs
-```
-
-Wrap your root in Chakra UI + React-Query providers:
+Ensure your application root is wrapped in Chakra UI and React Query providers.
 
 ```jsx
-// pages/_app.js
+// Next.js: pages/_app.js
 import { ChakraProvider } from "@chakra-ui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const queryClient = new QueryClient();
-
 export default function App({ Component, pageProps }) {
   return (
     <ChakraProvider>
@@ -116,7 +131,47 @@ export default function App({ Component, pageProps }) {
 }
 ```
 
-Now copy any widget, pass in the required props (e.g. `address`, `contract`), and it will just work.
+```jsx
+// Create React App / Vite: src/index.js (or main.jsx)
+import React from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App";
+import { ChakraProvider } from "@chakra-ui/react";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
+createRoot(document.getElementById("root")).render(
+  <ChakraProvider>
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  </ChakraProvider>
+);
+```
+
+### 5. Import and use your component
+
+Now you can import any widget directly from your copied `src`:
+
+```jsx
+// e.g. in App.js or any page/component
+import { CollectionStatsBadge, NFTWalletHoldings } from "../path-to-your-copy/src";
+
+function Demo() {
+  return (
+    <>
+      <CollectionStatsBadge
+        contract="0xbd3531da5cf5857e7cfaa92426877b022e612cf8"
+        networkId="mainnet"
+      />
+      <NFTWalletHoldings address="vitalik.eth" networkId="mainnet" />
+    </>
+  );
+}
+export default Demo;
+```
+
+And that's it—all widgets should render and fetch data as expected with no further wiring.
 
 ---
 

@@ -10,23 +10,33 @@ import {
   Text,
   Link as ChakraLink,
 } from "@chakra-ui/react";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { useQuery } from "react-query";
-import axios from "axios";
+import tokenFetch from "../lib/tokenFetch";
 
-dayjs.extend(relativeTime);
+function minutesAgo(date) {
+  const diffMs = Date.now() - new Date(date).getTime();
+  return Math.round(diffMs / 60000);
+}
 
-const TOKEN_API = "/api/token";
+function formatAgo(date) {
+  const minutes = minutesAgo(date);
+  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  if (Math.abs(minutes) < 60) return rtf.format(-minutes, "minute");
+  const hours = Math.round(minutes / 60);
+  if (Math.abs(hours) < 24) return rtf.format(-hours, "hour");
+  const days = Math.round(hours / 24);
+  return rtf.format(-days, "day");
+}
 
 function useRecentSales(contract, networkId) {
   return useQuery(
     ["sales", contract, networkId],
     async () => {
-      const { data } = await axios.get(`${TOKEN_API}/nft/sales/evm`, {
-        params: { token: contract, limit: 10, network_id: networkId },
-      });
-      return data.data;
+      const json = await tokenFetch(
+        `/nft/sales/evm`,
+        { token: contract, limit: 10, network_id: networkId },
+      );
+      return json.data;
     },
     { enabled: !!contract },
   );
@@ -54,7 +64,7 @@ export default function RecentSalesTable({ contract, networkId = "mainnet" }) {
         <Tbody>
           {data.map((sale, idx) => (
             <Tr key={`${sale.tx_hash}-${idx}`}>
-              <Td>{dayjs(sale.timestamp).fromNow()}</Td>
+              <Td>{formatAgo(sale.timestamp)}</Td>
               <Td fontSize="xs">
                 {sale.offerer?.slice(0, 6)}… → {sale.recipient?.slice(0, 6)}…
               </Td>

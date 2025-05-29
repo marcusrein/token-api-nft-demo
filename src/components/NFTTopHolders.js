@@ -11,7 +11,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import axios from "axios";
+import tokenFetch from "../lib/tokenFetch";
 
 const TOKEN_API = "/api/token";
 
@@ -19,13 +19,11 @@ function useTopHolders(contract, networkId) {
   return useQuery(
     ["topHolders", contract, networkId],
     async () => {
-      const { data } = await axios.get(
-        `${TOKEN_API}/nft/holders/evm/${contract}`,
-        {
-          params: { limit: 10, network_id: networkId },
-        },
+      const json = await tokenFetch(
+        `/nft/holders/evm/${contract}`,
+        { limit: 10, network_id: networkId },
       );
-      return data.data;
+      return json.data;
     },
     { enabled: !!contract },
   );

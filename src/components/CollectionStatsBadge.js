@@ -10,16 +10,16 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import axios from "axios";
+import tokenFetch from "../lib/tokenFetch";
 
 const TOKEN_API = "/api/token";
 
 async function fetchCollection(contract, networkId) {
-  const { data } = await axios.get(
-    `${TOKEN_API}/nft/collections/evm/${contract}`,
-    { params: { network_id: networkId } },
+  const json = await tokenFetch(
+    `/nft/collections/evm/${contract}`,
+    { network_id: networkId },
   );
-  return data.data?.[0];
+  return json.data?.[0];
 }
 
 export default function CollectionStatsBadge({

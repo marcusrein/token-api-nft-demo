@@ -1,14 +1,12 @@
 import { useQuery } from "react-query";
-import tokenApi from "../lib/tokenApi";
+import tokenFetch from "../lib/tokenFetch";
 
 export default function useRecentSales(contract) {
   return useQuery(
     ["recentSales", contract],
     async () => {
-      const { data } = await tokenApi.get("/nft/sales/evm", {
-        params: { token: contract, limit: 10 },
-      });
-      return data.data;
+      const json = await tokenFetch("/nft/sales/evm", { token: contract, limit: 10 });
+      return json.data;
     },
     { enabled: !!contract, staleTime: 60 * 1000 },
   );

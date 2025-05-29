@@ -1,14 +1,12 @@
 import { useQuery } from "react-query";
-import tokenApi from "../lib/tokenApi";
+import tokenFetch from "../lib/tokenFetch";
 
 export default function useTopHolders(contract) {
   return useQuery(
     ["topHolders", contract],
     async () => {
-      const { data } = await tokenApi.get(`/nft/holders/evm/${contract}`, {
-        params: { limit: 10 },
-      });
-      return data.data;
+      const json = await tokenFetch(`/nft/holders/evm/${contract}`, { limit: 10 });
+      return json.data;
     },
     { enabled: !!contract, staleTime: 60 * 1000 },
   );

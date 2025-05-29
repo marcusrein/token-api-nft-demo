@@ -15,7 +15,6 @@ export { default as useNftItem } from "./hooks/useNftItem";
 export { default as useResolvedImage } from "./hooks/useResolvedImage";
 export { default as useTopHolders } from "./hooks/useTopHolders";
 export { default as useActivities } from "./hooks/useActivities";
-export { default as useEnsAddress } from "./hooks/useEnsAddress";
 export { default as useRecentSales } from "./hooks/useRecentSales";
 
 // Utils
@@ -25,5 +24,4 @@ export { default as convertToHttpUrl } from "./utils/convertToHttpUrl";
 export { ChainProvider, useChain, SUPPORTED_CHAINS } from "./contexts/ChainContext";
 
 // API helpers & logger
-export { default as tokenApi } from "./lib/tokenApi";
 export { default as logger } from "./lib/logger"; 

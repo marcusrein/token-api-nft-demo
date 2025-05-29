@@ -11,7 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import axios from "axios";
+import tokenFetch from "../lib/tokenFetch";
 
 const TOKEN_API = "/api/token";
 
@@ -26,16 +26,11 @@ function useNFTOwnerships(address, networkId) {
   return useQuery(
     ["ownerships", address, networkId],
     async () => {
-      const { data } = await axios.get(
-        `${TOKEN_API}/nft/ownerships/evm/${address}`,
-        {
-          params: {
-            limit: 20,
-            network_id: networkId,
-          },
-        },
+      const json = await tokenFetch(
+        `/nft/ownerships/evm/${address}`,
+        { limit: 20, network_id: networkId },
       );
-      return data.data;
+      return json.data;
     },
     { enabled: !!address },
   );

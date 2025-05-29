@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import tokenApi from "../lib/tokenApi";
+import tokenFetch from "../lib/tokenFetch";
 
 export default function useActivities({ wallet, contract }) {
   return useQuery(
@@ -8,8 +8,8 @@ export default function useActivities({ wallet, contract }) {
       const params = { limit: 10, orderDirection: "desc" };
       if (wallet) params.any = wallet;
       if (contract) params.contract = contract;
-      const { data } = await tokenApi.get("/nft/activities/evm", { params });
-      return data.data;
+      const json = await tokenFetch("/nft/activities/evm", params);
+      return json.data;
     },
     { enabled: !!wallet || !!contract, staleTime: 30 * 1000 },
   );
