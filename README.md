@@ -66,6 +66,60 @@ src/
 
 ---
 
+## 📦 Copy-and-Paste Component Kit
+
+All UI widgets live in `src/components` and their helpers (`src/hooks`, `src/utils`, `src/lib`).  A single barrel file exposes everything so you can do:
+
+```js
+import { NFTWalletHoldings, CollectionStatsBadge } from "../path-to-this-repo/src";
+```
+
+To drop any component into **another** Next.js / React project you only need:
+
+1. The component file (or just `src` folder).
+2. The peer packages listed below.
+3. These two env vars in a `.env.local` file so the Token API can authenticate:
+
+```
+NEXT_PUBLIC_TOKEN_API_JWT_KEY=<your_market_jwt>
+NEXT_PUBLIC_THE_GRAPH_NETWORK_API_KEY=<your_network_key>
+```
+
+### Peer dependencies
+
+```
+react >= 18
+next >= 14
+@chakra-ui/react @emotion/react @emotion/styled framer-motion
+@tanstack/react-query (or react-query v3)
+axios
+dayjs
+```
+
+Wrap your root in Chakra UI + React-Query providers:
+
+```jsx
+// pages/_app.js
+import { ChakraProvider } from "@chakra-ui/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
+export default function App({ Component, pageProps }) {
+  return (
+    <ChakraProvider>
+      <QueryClientProvider client={queryClient}>
+        <Component {...pageProps} />
+      </QueryClientProvider>
+    </ChakraProvider>
+  );
+}
+```
+
+Now copy any widget, pass in the required props (e.g. `address`, `contract`), and it will just work.
+
+---
+
 ## 📝 License
 
 MIT
