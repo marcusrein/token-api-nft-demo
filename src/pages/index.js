@@ -17,14 +17,12 @@ import NFTTopHolders from "../components/NFTTopHolders";
 import RecentSalesTable from "../components/RecentSalesTable";
 import ActivityFeed from "../components/ActivityFeed";
 import CollectionStatsBadge from "../components/CollectionStatsBadge";
-import useEnsAddress from "../hooks/useEnsAddress";
 import ApiLogDrawer from "../components/ApiLogDrawer";
 import ChainSelector from "../components/ChainSelector";
 import { useChain } from "../contexts/ChainContext";
 
 export default function Home() {
-  const [input, setInput] = useState("vitalik.eth");
-  const { address } = useEnsAddress(input);
+  const [input, setInput] = useState("0xd8da6bf26964af9d7eed9e03e53415d37aa96045");
   const [contract, setContract] = useState(
     "0xbd3531da5cf5857e7cfaa92426877b022e612cf8",
   );
@@ -38,7 +36,7 @@ export default function Home() {
           <ChainSelector />
         </HStack>
         <Text fontSize="sm" color="gray.600">
-          Enter an Ethereum wallet address or ENS name below to see its NFT
+          Enter an Ethereum wallet address below to see its NFT
           holdings and related collection information across multiple chains.
           This demonstrates how the Token API can be used to build rich NFT
           portfolio experiences.
@@ -47,10 +45,10 @@ export default function Home() {
           Wallet Explorer
         </Heading>
         <Text fontSize="sm" color="gray.600" mb={2}>
-          Enter a wallet address or ENS name below to explore NFT holdings.
+          Enter a wallet address below to explore NFT holdings.
         </Text>
         <Input
-          placeholder="e.g., vitalik.eth or 0xd8dA..."
+          placeholder="e.g., 0xd8dA.."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           size="sm"
@@ -61,7 +59,7 @@ export default function Home() {
           <CardHeader>
             <Heading size="md">NFT Ownerships</Heading>
             <Text fontSize="sm" color="gray.600">
-              Enter a wallet address or ENS name below to see their NFTs.
+              Enter a wallet address below to see their NFTs.
             </Text>
             <Text fontSize="xs" color="gray.500">
               Uses:{" "}
@@ -84,7 +82,7 @@ export default function Home() {
             </Text>
           </CardHeader>
           <CardBody>
-            <NFTWalletHoldings address={address} networkId={selectedChain} />
+            <NFTWalletHoldings address={input} networkId={selectedChain} />
           </CardBody>
         </Card>
 

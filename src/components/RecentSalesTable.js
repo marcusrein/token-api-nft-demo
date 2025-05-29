@@ -13,6 +13,8 @@ import {
 import { useQuery } from "react-query";
 import tokenFetch from "../lib/tokenFetch";
 
+const TOKEN_API = "/api/token";
+
 function minutesAgo(date) {
   const diffMs = Date.now() - new Date(date).getTime();
   return Math.round(diffMs / 60000);
@@ -34,7 +36,7 @@ function useRecentSales(contract, networkId) {
     async () => {
       const json = await tokenFetch(
         `/nft/sales/evm`,
-        { token: contract, limit: 10, network_id: networkId },
+        { contract, limit: 10, network_id: networkId },
       );
       return json.data;
     },
