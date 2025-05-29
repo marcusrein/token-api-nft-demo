@@ -1,6 +1,28 @@
 import { VStack, HStack, Text, Spinner } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import tokenFetch from "../lib/tokenFetch";
+
+// Inline API helper
+async function tokenFetch(path, params = {}) {
+  const base = typeof window === "undefined"
+    ? "https://token-api.service.stage.pinax.network/"
+    : `${window.location.origin}/api/token/`;
+
+  const cleanedPath = path.startsWith("/") ? path.slice(1) : path;
+  const url = new URL(cleanedPath, base);
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null) url.searchParams.set(k, v);
+  });
+
+  const headers = { Accept: "application/json" };
+  const jwt = process.env.NEXT_PUBLIC_TOKEN_API_JWT_KEY;
+  if (jwt) headers.Authorization = `Bearer ${jwt}`;
+
+  const res = await fetch(url.toString(), { method: "GET", headers });
+  if (!res.ok) {
+    throw new Error(`Token API ${res.status}: ${await res.text()}`);
+  }
+  return res.json();
+}
 
 function useActivities(params) {
   return useQuery(
@@ -18,30 +40,28 @@ function useActivities(params) {
   );
 }
 
-function badge(type) {
-  switch (type) {
-    case "MINT":
-      return "🟢";
-    case "BURN":
-      return "🔴";
-    default:
-      return "🔄";
-  }
-}
-
-function minutesAgo(date) {
-  const diffMs = Date.now() - new Date(date).getTime();
-  return Math.round(diffMs / 60000);
-}
-
 function formatAgo(date) {
-  const minutes = minutesAgo(date);
+  const diffMs = Date.now() - new Date(date).getTime();
+  const minutes = Math.round(diffMs / 60000);
   const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
   if (Math.abs(minutes) < 60) return rtf.format(-minutes, "minute");
   const hours = Math.round(minutes / 60);
   if (Math.abs(hours) < 24) return rtf.format(-hours, "hour");
   const days = Math.round(hours / 24);
   return rtf.format(-days, "day");
+}
+
+function badge(type) {
+  switch (type) {
+    case "mint":
+      return "🌱";
+    case "transfer":
+      return "↔️";
+    case "burn":
+      return "🔥";
+    default:
+      return "❓";
+  }
 }
 
 export default function ActivityFeed({

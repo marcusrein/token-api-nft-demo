@@ -11,16 +11,38 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import tokenFetch from "../lib/tokenFetch";
 
-const TOKEN_API = "/api/token";
+// Inline API helper
+async function tokenFetch(path, params = {}) {
+  const base = typeof window === "undefined"
+    ? "https://token-api.service.stage.pinax.network/"
+    : `${window.location.origin}/api/token/`;
 
-const toHttp = (url) => {
+  const cleanedPath = path.startsWith("/") ? path.slice(1) : path;
+  const url = new URL(cleanedPath, base);
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null) url.searchParams.set(k, v);
+  });
+
+  const headers = { Accept: "application/json" };
+  const jwt = process.env.NEXT_PUBLIC_TOKEN_API_JWT_KEY;
+  if (jwt) headers.Authorization = `Bearer ${jwt}`;
+
+  const res = await fetch(url.toString(), { method: "GET", headers });
+  if (!res.ok) {
+    throw new Error(`Token API ${res.status}: ${await res.text()}`);
+  }
+  return res.json();
+}
+
+// Inline URL conversion utility
+function convertToHttpUrl(url) {
   if (!url) return null;
-  return url.startsWith("ipfs://")
-    ? url.replace("ipfs://", "https://ipfs.io/ipfs/")
-    : url;
-};
+  if (url.startsWith("ipfs://")) {
+    return url.replace("ipfs://", "https://ipfs.io/ipfs/");
+  }
+  return url;
+}
 
 function useNFTOwnerships(address, networkId) {
   return useQuery(
@@ -28,11 +50,11 @@ function useNFTOwnerships(address, networkId) {
     async () => {
       const json = await tokenFetch(
         `/nft/ownerships/evm/${address}`,
-        { limit: 20, network_id: networkId },
+        { limit: 20, network_id: networkId }
       );
       return json.data;
     },
-    { enabled: !!address },
+    { enabled: !!address }
   );
 }
 
@@ -57,9 +79,9 @@ export default function NFTWalletHoldings({ address, networkId = "mainnet" }) {
         <Tbody>
           {data.map((nft, index) => {
             const meta =
-              toHttp(nft.uri) ||
-              toHttp(nft.image) ||
-              `${TOKEN_API}/nft/items/evm/contract/${nft.contract}/token_id/${encodeURIComponent(String(nft.token_id))}`;
+              convertToHttpUrl(nft.uri) ||
+              convertToHttpUrl(nft.image) ||
+              `/api/token/nft/items/evm/contract/${nft.contract}/token_id/${encodeURIComponent(String(nft.token_id))}`;
             return (
               <Tr key={`${nft.contract}-${nft.token_id}-${index}`}>
                 <Td>

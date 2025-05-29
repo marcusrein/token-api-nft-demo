@@ -67,27 +67,30 @@ src/
 
 ## 📦 Copy-and-Paste Component Kit
 
-You can seamlessly reuse any widget from this repo in your own React or Next.js project—no extra setup required.
+Each component in this repo is fully self-contained and can be seamlessly reused in your own React or Next.js project—no extra setup required beyond the basic dependencies.
 
-### 1. Copy the source files
+### Available Components
 
-- Copy the component file(s) you need from `src/components/`, e.g. `src/components/CollectionStatsBadge.js`.
-- Also copy any helpers those components depend on:
-  - `src/hooks/` (custom React hooks)
-  - `src/utils/` (utility functions)
-  - `src/lib/`  (API client & logger)
+- `NFTWalletHoldings`: Display NFT holdings for a wallet address
+- `RecentSalesTable`: Show recent sales for a collection
+- `TopHoldersTable`: Display top holders of a collection
+- `ActivityFeed`: Show recent NFT activities (mints, transfers, burns)
+- `CollectionStatsBadge`: Display collection statistics
+- `NftThumb`: Render NFT images with IPFS support
 
-_Or simply grab the entire `src/` folder to get everything at once._
+### 1. Copy a component
+
+Simply copy any component file you need from `src/components/` into your project. Each component is self-contained with all necessary API calls and utilities inline.
 
 ### 2. Install peer dependencies
 
 Run one of the following to install the required packages:
 ```bash
 # npm
-npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion react-query axios dayjs
+npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion react-query
 
 # pnpm
-pnpm add @chakra-ui/react @emotion/react @emotion/styled framer-motion react-query axios dayjs
+pnpm add @chakra-ui/react @emotion/react @emotion/styled framer-motion react-query
 ```  
 
 ### 3. Configure environment variables
@@ -147,11 +150,12 @@ createRoot(document.getElementById("root")).render(
 
 ### 5. Import and use your component
 
-Now you can import any widget directly from your copied `src`:
+Now you can import any component directly:
 
 ```jsx
 // e.g. in App.js or any page/component
-import { CollectionStatsBadge, NFTWalletHoldings } from "../path-to-your-copy/src";
+import { CollectionStatsBadge } from "./components/CollectionStatsBadge";
+import { NFTWalletHoldings } from "./components/NFTWalletHoldings";
 
 function Demo() {
   return (
@@ -167,7 +171,7 @@ function Demo() {
 export default Demo;
 ```
 
-And that's it—all widgets should render and fetch data as expected with no further wiring.
+And that's it—all components are self-contained and will render and fetch data as expected with no further wiring.
 
 ---
 

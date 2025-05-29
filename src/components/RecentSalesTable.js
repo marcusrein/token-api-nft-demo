@@ -11,9 +11,29 @@ import {
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import tokenFetch from "../lib/tokenFetch";
 
-const TOKEN_API = "/api/token";
+// Inline API helper
+async function tokenFetch(path, params = {}) {
+  const base = typeof window === "undefined"
+    ? "https://token-api.service.stage.pinax.network/"
+    : `${window.location.origin}/api/token/`;
+
+  const cleanedPath = path.startsWith("/") ? path.slice(1) : path;
+  const url = new URL(cleanedPath, base);
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null) url.searchParams.set(k, v);
+  });
+
+  const headers = { Accept: "application/json" };
+  const jwt = process.env.NEXT_PUBLIC_TOKEN_API_JWT_KEY;
+  if (jwt) headers.Authorization = `Bearer ${jwt}`;
+
+  const res = await fetch(url.toString(), { method: "GET", headers });
+  if (!res.ok) {
+    throw new Error(`Token API ${res.status}: ${await res.text()}`);
+  }
+  return res.json();
+}
 
 function minutesAgo(date) {
   const diffMs = Date.now() - new Date(date).getTime();
@@ -72,7 +92,7 @@ export default function RecentSalesTable({ contract, networkId = "mainnet" }) {
               </Td>
               <Td fontSize="xs">
                 <ChakraLink
-                  href={`${TOKEN_API}/nft/items/evm/contract/${contract}/token_id/${sale.token_id}`}
+                  href={`/api/token/nft/items/evm/contract/${contract}/token_id/${sale.token_id}`}
                   isExternal
                   color="blue.500"
                 >
