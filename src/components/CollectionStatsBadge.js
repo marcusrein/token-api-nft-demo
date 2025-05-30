@@ -11,6 +11,7 @@ import {
   Input,
   Select,
   Button,
+  Link,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { useState } from "react";
@@ -74,7 +75,7 @@ export default function CollectionStatsBadge() {
         Enter an NFT contract address to view its metadata.
       </Text>
       <Text fontSize="xs" color="gray.500" mb={2}>
-        Uses: /nft/collections
+        Uses: <Link href="https://token-api.service.stage.pinax.network/#tag/evm/GET/nft/collections/evm/%7Bcontract%7D" isExternal color="blue.500">/nft/collections</Link>
       </Text>
       <HStack mb={2} spacing={2}>
         <Input

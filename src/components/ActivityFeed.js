@@ -1,4 +1,4 @@
-import { VStack, HStack, Text, Spinner, Input, Box, Select, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Button } from "@chakra-ui/react";
+import { VStack, HStack, Text, Spinner, Input, Box, Select, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Button, Link } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { useState } from "react";
 
@@ -99,7 +99,7 @@ export default function ActivityFeed() {
         Recent NFT mints, transfers and burns for this contract.
       </Text>
       <Text fontSize="xs" color="gray.500" mb={2}>
-        Uses: /nft/activities
+        Uses: <Link href="https://token-api.service.stage.pinax.network/#tag/evm/GET/nft/activities/evm" isExternal color="blue.500">/nft/activities</Link>
       </Text>
       <HStack mb={2} spacing={2}>
         <Input

@@ -80,7 +80,7 @@ export default function NFTTopHolders() {
         Top NFT holders for this contract.
       </Text>
       <Text fontSize="xs" color="gray.500" mb={2}>
-        Uses: /nft/holders
+        Uses: <Link href="https://token-api.service.stage.pinax.network/#tag/evm/GET/nft/holders/evm/%7Bcontract%7D" isExternal color="blue.500">/nft/holders</Link>
       </Text>
       <Box mb={2} display="flex" gap={2}>
         <Input

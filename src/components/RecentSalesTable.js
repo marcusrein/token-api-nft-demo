@@ -94,7 +94,7 @@ export default function RecentSalesTable() {
         Latest sales for this contract.
       </Text>
       <Text fontSize="xs" color="gray.500" mb={2}>
-        Uses: /nft/sales
+        Uses: <ChakraLink href="https://token-api.service.stage.pinax.network/#tag/evm/GET/nft/sales/evm" isExternal color="blue.500">/nft/sales</ChakraLink>
       </Text>
       <Box mb={2} display="flex" gap={2}>
         <Input

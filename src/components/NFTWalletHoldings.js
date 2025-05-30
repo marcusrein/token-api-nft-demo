@@ -88,7 +88,7 @@ export default function NFTWalletHoldings() {
         Enter a wallet address below to see their NFTs.
       </Text>
       <Text fontSize="xs" color="gray.500" mb={2}>
-        Uses: /nft/ownerships and /nft/items
+        Uses: <Link href="https://token-api.service.stage.pinax.network/#tag/evm/GET/nft/ownerships/evm/%7Baddress%7D" isExternal color="blue.500">/nft/ownerships</Link> and <Link href="https://token-api.service.stage.pinax.network/#tag/evm/GET/nft/items/evm/contract/%7Bcontract%7D/token_id/%7Btoken_id%7D" isExternal color="blue.500">/nft/items</Link>
       </Text>
       <Box mb={2} display="flex" gap={2}>
         <Input
