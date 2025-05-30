@@ -9,8 +9,26 @@ import {
   Spinner,
   Text,
   Link as ChakraLink,
+  Input,
+  Box,
+  Select,
+  Button,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
+import { useState } from "react";
+
+// =============================================
+// Input Interface
+// =============================================
+/**
+ * @typedef {Object} RecentSalesTableInput
+ * @property {string} contract - The contract address of the NFT collection
+ * @property {string} [networkId=mainnet] - Network ID to query (default: mainnet)
+ */
+
+// =============================================
+// Component Logic
+// =============================================
 
 // Inline API helper
 async function tokenFetch(path, params = {}) {
@@ -64,48 +82,77 @@ function useRecentSales(contract, networkId) {
   );
 }
 
-export default function RecentSalesTable({ contract, networkId = "mainnet" }) {
-  const { data, isLoading, error } = useRecentSales(contract, networkId);
-
-  if (!contract) return <Text>Enter a contract to see sales.</Text>;
-  if (isLoading) return <Spinner />;
-  if (error) return <Text color="red.500">Error loading sales</Text>;
-  if (!data || data.length === 0) return <Text>No recent sales.</Text>;
+export default function RecentSalesTable() {
+  const [input, setInput] = useState("");
+  const [submittedInput, setSubmittedInput] = useState("");
+  const [networkId, setNetworkId] = useState("mainnet");
+  const { data, isLoading, error } = useRecentSales(submittedInput, networkId);
 
   return (
-    <TableContainer>
-      <Table size="sm" variant="simple">
-        <Thead>
-          <Tr>
-            <Th>Time</Th>
-            <Th>Buyer → Seller</Th>
-            <Th>Token</Th>
-            <Th isNumeric>Price</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {data.map((sale, idx) => (
-            <Tr key={`${sale.tx_hash}-${idx}`}>
-              <Td>{formatAgo(sale.timestamp)}</Td>
-              <Td fontSize="xs">
-                {sale.offerer?.slice(0, 6)}… → {sale.recipient?.slice(0, 6)}…
-              </Td>
-              <Td fontSize="xs">
-                <ChakraLink
-                  href={`/api/token/nft/items/evm/contract/${contract}/token_id/${sale.token_id}`}
-                  isExternal
-                  color="blue.500"
-                >
-                  #{sale.token_id}
-                </ChakraLink>
-              </Td>
-              <Td isNumeric>
-                {sale.sale_amount} {sale.sale_currency}
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <Box>
+      <Text fontSize="sm" color="gray.600">
+        Latest sales for this contract.
+      </Text>
+      <Text fontSize="xs" color="gray.500" mb={2}>
+        Uses: /nft/sales
+      </Text>
+      <Box mb={2} display="flex" gap={2}>
+        <Input
+          placeholder="Enter contract address"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          size="sm"
+        />
+        <Select
+          value={networkId}
+          onChange={(e) => setNetworkId(e.target.value)}
+          size="sm"
+          w="fit-content"
+        >
+          <option value="mainnet">Ethereum Mainnet</option>
+          <option value="goerli">Goerli</option>
+        </Select>
+        <Button size="sm" onClick={() => setSubmittedInput(input.trim())}>
+          Fetch
+        </Button>
+      </Box>
+      {isLoading && <Spinner />}
+      {error && <Text color="red.500">Error loading sales</Text>}
+      {!isLoading && !error && submittedInput && (!data || data.length === 0) && (
+        <Text>No recent sales.</Text>
+      )}
+      {!isLoading && !error && data && data.length > 0 && (
+        <TableContainer maxH="300px" overflowY="auto">
+          <Table size="sm" variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Time</Th>
+                <Th>Buyer → Seller</Th>
+                <Th>Token</Th>
+                <Th isNumeric>Price</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {data.map((sale, idx) => (
+                <Tr key={`${sale.tx_hash}-${idx}`}>
+                  <Td>{formatAgo(sale.timestamp)}</Td>
+                  <Td fontSize="xs">
+                    {sale.offerer?.slice(0, 6)}… → {sale.recipient?.slice(0, 6)}…
+                  </Td>
+                  <Td fontSize="xs">
+                    <Text color="blue.500" isTruncated>
+                      #{sale.token_id}
+                    </Text>
+                  </Td>
+                  <Td isNumeric>
+                    {sale.sale_amount} {sale.sale_currency}
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      )}
+    </Box>
   );
 }

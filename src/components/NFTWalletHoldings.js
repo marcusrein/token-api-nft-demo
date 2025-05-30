@@ -9,8 +9,26 @@ import {
   Link,
   Spinner,
   Text,
+  Input,
+  Box,
+  Select,
+  Button,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
+import { useState } from "react";
+
+// =============================================
+// Input Interface
+// =============================================
+/**
+ * @typedef {Object} NFTWalletHoldingsInput
+ * @property {string} address - The wallet address to view NFT holdings for
+ * @property {string} [networkId=mainnet] - Network ID to query (default: mainnet)
+ */
+
+// =============================================
+// Component Logic
+// =============================================
 
 // Inline API helper
 async function tokenFetch(path, params = {}) {
@@ -58,53 +76,89 @@ function useNFTOwnerships(address, networkId) {
   );
 }
 
-export default function NFTWalletHoldings({ address, networkId = "mainnet" }) {
-  const { data, isLoading, error } = useNFTOwnerships(address, networkId);
-
-  if (!address) return <Text>Enter a wallet/ENS to view NFTs</Text>;
-  if (isLoading) return <Spinner size="sm" />;
-  if (error) return <Text color="red.500">Error: {error.message}</Text>;
-  if (!data?.length) return <Text>No NFTs found.</Text>;
+export default function NFTWalletHoldings() {
+  const [input, setInput] = useState("");
+  const [submittedInput, setSubmittedInput] = useState("");
+  const [networkId, setNetworkId] = useState("mainnet");
+  const { data, isLoading, error } = useNFTOwnerships(submittedInput, networkId);
 
   return (
-    <TableContainer>
-      <Table size="sm">
-        <Thead>
-          <Tr>
-            <Th>Collection</Th>
-            <Th>Token ID</Th>
-            <Th>Metadata</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {data.map((nft, index) => {
-            const meta =
-              convertToHttpUrl(nft.uri) ||
-              convertToHttpUrl(nft.image) ||
-              `/api/token/nft/items/evm/contract/${nft.contract}/token_id/${encodeURIComponent(String(nft.token_id))}`;
-            return (
-              <Tr key={`${nft.contract}-${nft.token_id}-${index}`}>
-                <Td>
-                  <Text fontSize="xs" fontWeight="bold">
-                    {nft.name || nft.symbol}
-                  </Text>
-                  <Text fontSize="xs" color="gray.500">
-                    {nft.contract}
-                  </Text>
-                </Td>
-                <Td>
-                  <Text fontSize="xs">{nft.token_id}</Text>
-                </Td>
-                <Td>
-                  <Link href={meta} isExternal fontSize="xs" color="blue.500">
-                    view
-                  </Link>
-                </Td>
+    <Box>
+      <Text fontSize="sm" color="gray.600">
+        Enter a wallet address below to see their NFTs.
+      </Text>
+      <Text fontSize="xs" color="gray.500" mb={2}>
+        Uses: /nft/ownerships and /nft/items
+      </Text>
+      <Box mb={2} display="flex" gap={2}>
+        <Input
+          placeholder="Wallet address or ENS"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          size="sm"
+        />
+        <Select
+          value={networkId}
+          onChange={(e) => setNetworkId(e.target.value)}
+          size="sm"
+          w="fit-content"
+        >
+          <option value="mainnet">Ethereum Mainnet</option>
+          <option value="goerli">Goerli</option>
+        </Select>
+        <Button size="sm" onClick={() => setSubmittedInput(input.trim())}>
+          Fetch
+        </Button>
+      </Box>
+      {isLoading && <Spinner size="sm" />}
+      {error && <Text color="red.500">Error: {error.message}</Text>}
+      {!isLoading && !error && submittedInput && (!data || data.length === 0) && (
+        <Text>No NFTs found.</Text>
+      )}
+      {!isLoading && !error && data && data.length > 0 && (
+        <TableContainer maxH="300px" overflowY="auto">
+          <Table size="sm">
+            <Thead>
+              <Tr>
+                <Th>Collection</Th>
+                <Th>Token ID</Th>
+                <Th>Metadata</Th>
               </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
-    </TableContainer>
+            </Thead>
+            <Tbody>
+              {data.map((nft, index) => {
+                const meta =
+                  (nft.uri && nft.uri.startsWith("ipfs://")
+                    ? nft.uri.replace("ipfs://", "https://ipfs.io/ipfs/")
+                    : nft.image) ||
+                  `/api/token/nft/items/evm/contract/${nft.contract}/token_id/${encodeURIComponent(
+                    String(nft.token_id)
+                  )}`;
+                return (
+                  <Tr key={`${nft.contract}-${nft.token_id}-${index}`}>
+                    <Td>
+                      <Text fontSize="xs" fontWeight="bold" isTruncated>
+                        {nft.name || nft.symbol}
+                      </Text>
+                      <Text fontSize="xs" color="gray.500" isTruncated>
+                        {nft.contract}
+                      </Text>
+                    </Td>
+                    <Td isNumeric>
+                      <Text fontSize="xs">{nft.token_id}</Text>
+                    </Td>
+                    <Td>
+                      <Link href={meta} isExternal fontSize="xs" color="blue.500">
+                        view
+                      </Link>
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      )}
+    </Box>
   );
 }

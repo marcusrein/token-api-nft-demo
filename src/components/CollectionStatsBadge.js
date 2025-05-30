@@ -8,8 +8,24 @@ import {
   Text,
   HStack,
   VStack,
+  Input,
+  Select,
+  Button,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
+import { useState } from "react";
+
+// =============================================
+// Input Interface
+// =============================================
+/**
+ * @typedef {Object} CollectionStatsBadgeInput
+ * @property {string} [contract] - The contract address of the NFT collection
+ */
+
+// =============================================
+// Component Logic
+// =============================================
 
 // Inline API helper
 async function tokenFetch(path, params = {}) {
@@ -42,44 +58,70 @@ async function fetchCollection(contract, networkId) {
   return json.data?.[0];
 }
 
-export default function CollectionStatsBadge({
-  contract,
-  networkId = "mainnet",
-}) {
+export default function CollectionStatsBadge() {
+  const [input, setInput] = useState("");
+  const [submittedInput, setSubmittedInput] = useState("");
+  const [networkId, setNetworkId] = useState("mainnet");
   const { data, isLoading, error } = useQuery(
-    ["collection", contract, networkId],
-    () => fetchCollection(contract, networkId),
-    {
-      enabled: !!contract,
-    },
+    ["collection", submittedInput, networkId],
+    () => fetchCollection(submittedInput, networkId),
+    { enabled: !!submittedInput }
   );
-
-  if (!contract) return <Text>Enter contract address</Text>;
-  if (isLoading) return <Spinner />;
-  if (error || !data)
-    return <Text color="red.500">Error loading collection</Text>;
 
   return (
     <Box borderWidth="1px" borderRadius="lg" p={4} w="full">
-      <VStack align="start" spacing={2}>
-        <Text fontWeight="bold" fontSize="lg">
-          {data.name} ({data.symbol})
-        </Text>
-        <HStack spacing={6} w="full">
-          <Stat>
-            <StatLabel>Total Supply</StatLabel>
-            <StatNumber>{data.total_supply?.toLocaleString()}</StatNumber>
-          </Stat>
-          <Stat>
-            <StatLabel>Owners</StatLabel>
-            <StatNumber>{data.owners?.toLocaleString()}</StatNumber>
-          </Stat>
-          <Stat>
-            <StatLabel>Total Transfers</StatLabel>
-            <StatNumber>{data.total_transfers?.toLocaleString()}</StatNumber>
-          </Stat>
-        </HStack>
-      </VStack>
+      <Text fontSize="sm" color="gray.600">
+        Enter an NFT contract address to view its metadata.
+      </Text>
+      <Text fontSize="xs" color="gray.500" mb={2}>
+        Uses: /nft/collections
+      </Text>
+      <HStack mb={2} spacing={2}>
+        <Input
+          placeholder="Enter contract address"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          size="sm"
+        />
+        <Select
+          value={networkId}
+          onChange={(e) => setNetworkId(e.target.value)}
+          size="sm"
+          w="fit-content"
+        >
+          <option value="mainnet">Ethereum Mainnet</option>
+          <option value="goerli">Goerli</option>
+        </Select>
+        <Button size="sm" onClick={() => setSubmittedInput(input.trim())}>
+          Fetch
+        </Button>
+      </HStack>
+      {isLoading && <Spinner />}
+      {error && <Text color="red.500">Error loading collection</Text>}
+      {!isLoading && !error && submittedInput && !data && (
+        <Text>No collection found.</Text>
+      )}
+      {data && (
+        <VStack align="start" spacing={2}>
+          <Text fontWeight="bold" fontSize="lg">
+            {data.name} ({data.symbol})
+          </Text>
+          <HStack spacing={6} w="full">
+            <Box>
+              <Text fontSize="xs" color="gray.500">Total Supply</Text>
+              <Text fontSize="lg">{data.total_supply?.toLocaleString()}</Text>
+            </Box>
+            <Box>
+              <Text fontSize="xs" color="gray.500">Owners</Text>
+              <Text fontSize="lg">{data.owners?.toLocaleString()}</Text>
+            </Box>
+            <Box>
+              <Text fontSize="xs" color="gray.500">Total Transfers</Text>
+              <Text fontSize="lg">{data.total_transfers?.toLocaleString()}</Text>
+            </Box>
+          </HStack>
+        </VStack>
+      )}
     </Box>
   );
 }

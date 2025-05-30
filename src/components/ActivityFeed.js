@@ -1,5 +1,20 @@
-import { VStack, HStack, Text, Spinner } from "@chakra-ui/react";
+import { VStack, HStack, Text, Spinner, Input, Box, Select, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Button } from "@chakra-ui/react";
 import { useQuery } from "react-query";
+import { useState } from "react";
+
+// =============================================
+// Input Interface
+// =============================================
+/**
+ * @typedef {Object} ActivityFeedInput
+ * @property {string} [wallet] - Wallet address to filter activities
+ * @property {string} [contract] - Contract address to filter activities
+ * @property {string} [networkId=mainnet] - Network ID to query (default: mainnet)
+ */
+
+// =============================================
+// Component Logic
+// =============================================
 
 // Inline API helper
 async function tokenFetch(path, params = {}) {
@@ -64,32 +79,79 @@ function badge(type) {
   }
 }
 
-export default function ActivityFeed({
-  wallet,
-  contract,
-  networkId = "mainnet",
-}) {
+/**
+ * Activity Feed Component
+ * @param {ActivityFeedInput} props
+ */
+export default function ActivityFeed() {
+  const [input, setInput] = useState("");
+  const [submittedInput, setSubmittedInput] = useState("");
+  const [networkId, setNetworkId] = useState("mainnet");
   const { data, isLoading, error } = useActivities({
-    wallet,
-    contract,
+    contract: submittedInput,
     networkId,
   });
 
-  if (isLoading) return <Spinner />;
-  if (error) return <Text color="red.500">Error loading activity</Text>;
-  if (!data || data.length === 0) return <Text>No recent activity.</Text>;
-
+  // Always render input controls
   return (
-    <VStack align="stretch" spacing={1} maxH="300px" overflowY="auto">
-      {data.map((act, idx) => (
-        <HStack key={`${act.tx_hash}-${idx}`} fontSize="xs" spacing={2}>
-          <Text>{badge(act["@type"])}</Text>
-          <Text>{formatAgo(act.timestamp)}</Text>
-          <Text>
-            #{act.token_id} {act.from?.slice(0, 4)}… → {act.to?.slice(0, 4)}…
-          </Text>
-        </HStack>
-      ))}
-    </VStack>
+    <Box maxW="100%">
+      <Text fontSize="sm" color="gray.600">
+        Recent NFT mints, transfers and burns for this contract.
+      </Text>
+      <Text fontSize="xs" color="gray.500" mb={2}>
+        Uses: /nft/activities
+      </Text>
+      <HStack mb={2} spacing={2}>
+        <Input
+          placeholder="Enter contract address"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          size="sm"
+        />
+        <Select
+          value={networkId}
+          onChange={(e) => setNetworkId(e.target.value)}
+          size="sm"
+          w="fit-content"
+        >
+          <option value="mainnet">Ethereum Mainnet</option>
+          <option value="goerli">Goerli</option>
+        </Select>
+        <Button size="sm" onClick={() => setSubmittedInput(input.trim())}>
+          Fetch
+        </Button>
+      </HStack>
+      {isLoading && <Spinner />}
+      {error && <Text color="red.500">Error loading activity</Text>}
+      {!isLoading && !error && submittedInput && (!data || data.length === 0) && (
+        <Text>No recent activity.</Text>
+      )}
+      {!isLoading && !error && data && data.length > 0 && (
+        <TableContainer maxH="300px" overflowY="auto">
+          <Table variant="simple" size="sm">
+            <Thead>
+              <Tr>
+                <Th>Type</Th>
+                <Th>Time</Th>
+                <Th>Token ID</Th>
+                <Th>From</Th>
+                <Th>To</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {data.map((act, idx) => (
+                <Tr key={`${act.tx_hash}-${idx}`}>  
+                  <Td>{badge(act["@type"])}</Td>
+                  <Td>{formatAgo(act.timestamp)}</Td>
+                  <Td>#{act.token_id}</Td>
+                  <Td>{act.from?.slice(0, 6)}…</Td>
+                  <Td>{act.to?.slice(0, 6)}…</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      )}
+    </Box>
   );
 }

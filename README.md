@@ -16,7 +16,7 @@ A modern, multi-chain NFT portfolio dashboard built with Next.js, Chakra UI, and
 
 ## 🚀 Features
 
-- ENS & address lookup for NFT holdings
+- Address lookup for NFT holdings
 - Collection explorer: stats, holders, sales, activity
 - Powered by [Token API](https://thegraph.com/docs/en/token-api/quick-start/)
 - Responsive, clean UI (Chakra UI)

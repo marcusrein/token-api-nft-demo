@@ -1,13 +1,8 @@
 // Components
-export { default as ApiLogDrawer } from "./components/ApiLogDrawer";
-export { default as ChainSelector } from "./components/ChainSelector";
 export { default as CollectionStatsBadge } from "./components/CollectionStatsBadge";
 export { default as NFTTopHolders } from "./components/NFTTopHolders";
 export { default as NFTWalletHoldings } from "./components/NFTWalletHoldings";
-export { default as NftOwnershipTable } from "./components/NftOwnershipTable";
-export { default as NftThumb } from "./components/NftThumb";
 export { default as RecentSalesTable } from "./components/RecentSalesTable";
-export { default as TopHoldersTable } from "./components/TopHoldersTable";
 export { default as ActivityFeed } from "./components/ActivityFeed";
 
 // Hooks
