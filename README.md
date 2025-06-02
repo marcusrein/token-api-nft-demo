@@ -87,10 +87,10 @@ Simply copy any component file you need from `src/components/` into your project
 Run one of the following to install the required packages:
 ```bash
 # npm
-npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion react-query
+npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion @tanstack/react-query
 
 # pnpm
-pnpm add @chakra-ui/react @emotion/react @emotion/styled framer-motion react-query
+pnpm install @chakra-ui/react @emotion/react @emotion/styled framer-motion @tanstack/react-query
 ```  
 
 ### 3. Configure environment variables
@@ -116,7 +116,7 @@ Ensure your application root is wrapped in Chakra UI and React Query providers.
 ```jsx
 // Next.js: pages/_app.js
 import { ChakraProvider } from "@chakra-ui/react";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 export default function App({ Component, pageProps }) {
@@ -136,7 +136,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { ChakraProvider } from "@chakra-ui/react";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")).render(

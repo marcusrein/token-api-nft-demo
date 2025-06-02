@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import convertToHttpUrl from "../utils/convertToHttpUrl";
 
 function needsMetadataFetch(url) {

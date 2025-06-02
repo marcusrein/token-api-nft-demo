@@ -5,6 +5,10 @@ import {
   Heading,
   Text,
   Link as ChakraLink,
+  Alert,
+  AlertIcon,
+  UnorderedList,
+  ListItem,
   Card,
   CardBody,
   Divider,
@@ -19,17 +23,55 @@ export default function Home() {
   return (
 		<Box p={8} maxW="960px" mx="auto">
 			<VStack spacing={3} align="stretch">
-				<Heading size="xl">NFT Portfolio Dashboard</Heading>
-				<Text fontSize="sm" color="gray.600">
-					Wallet example is Vitalik's EOA: 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
-				</Text>
+				<Heading size="xl" mb={4}>
+					NFT Portfolio Dashboard
+				</Heading>
+				<Alert status="info" variant="left-accent" borderRadius="md" mb={6}>
+					<Box>
+						<Text fontSize="md" mb={2}>
+							All data is fetched from The Graph's Token API. Read about the API{" "}
+							<ChakraLink
+								href="https://token-api.service.stage.pinax.network/#tag/evm"
+								isExternal
+								color="blue.500"
+							>
+								here
+							</ChakraLink>{' '}and read the Quickstart guide{' '}
+							<ChakraLink
+								href="https://token-api.service.stage.pinax.network/quickstart"
+								isExternal
+								color="blue.500"
+							>
+								here
+							</ChakraLink>.
+						</Text>
+						<Text fontSize="sm" color="gray.600" mb={2}>
+							Use these two example smart contract addresses to test the components ➡️. All EOAs and Collection smart contract addresses will work, these are simply provided as examples. Currently, Ethereum Mainnet is the only network supported for Token API NFT data, however more networks will be added in the future.
+						</Text>
+					</Box>
+					<UnorderedList spacing={1} pl={4}>
+						<ListItem>
+							<Text as="span" fontWeight="semibold">Wallet NFT Explorer example EOA:</Text> 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+						</ListItem>
+						<ListItem>
+							<Text as="span" fontWeight="semibold">NFT Collection Explorer example smart contract:</Text> 0xbd3531da5cf5857e7cfaa92426877b022e612cf8
+						</ListItem>
+					</UnorderedList>
+				</Alert>
 				<Text fontSize="sm" color="gray.600" mb={2}>
-					Collection example is Pudgy Penguins smart contract: 0xbd3531da5cf5857e7cfaa92426877b022e612cf8
+					Each component below is standalone! You can copy and paste the
+					components into your own project - simply add your own JWT key
+					gathered from{" "}
+					<ChakraLink
+						href="https://marketplace.thegraph.com/"
+						isExternal
+						color="blue.500"
+					>
+						The Graph Marketplace
+					</ChakraLink>{" "}
+					to your .env.local file.
 				</Text>
-				<Text fontSize="sm" color="gray.600" mb={2}>
-					Each component below is standalone—use its built-in inputs to query.
-				</Text>
-<Heading size="lg" mb={2}>
+				<Heading size="lg" mb={2}>
 					Wallet NFT Explorer
 				</Heading>
 				<Text fontSize="sm" color="gray.600" mb={4}>

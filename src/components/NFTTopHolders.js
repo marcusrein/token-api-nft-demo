@@ -14,7 +14,7 @@ import {
   Select,
   Button,
 } from "@chakra-ui/react";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 // =============================================
@@ -93,10 +93,16 @@ export default function NFTTopHolders() {
           value={networkId}
           onChange={(e) => setNetworkId(e.target.value)}
           size="sm"
+          mb={2}
           w="fit-content"
         >
           <option value="mainnet">Ethereum Mainnet</option>
-          <option value="goerli">Goerli</option>
+          <option value="arbitrum-one" disabled>Arbitrum One (Coming Soon)</option>
+          <option value="base" disabled>Base (Coming Soon)</option>
+          <option value="bsc" disabled>BSC (Coming Soon)</option>
+          <option value="matic" disabled>Polygon (Coming Soon)</option>
+          <option value="optimism" disabled>Optimism (Coming Soon)</option>
+          <option value="unichain" disabled>UniChain (Coming Soon)</option>
         </Select>
         <Button size="sm" onClick={() => setSubmittedInput(input.trim())}>
           Fetch
